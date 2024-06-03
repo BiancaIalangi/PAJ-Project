@@ -1,0 +1,8 @@
+- The project should have the minimum complexity of the banking application presented in the course
+(what you have received and what you need to implement)
+- Using collections (generate reports) - 15 points
+- Multi-threading - 20 points
+- Using lambdas/references to methods - 15 points
+- Using streams - 15 points
+- Code quality - 15 points
+- Unit tests covering at least 75% of the code - 20 points
