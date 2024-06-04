@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -59,7 +60,7 @@ class TestPostService {
     void testGetAllPosts() {
         postService.createPost(adminUser, "Group Post", "This is a group post", group);
         postService.createPost(adminUser, "CoP Post", "This is a CoP post", cop);
-        List<Post> posts = postService.getAllPosts();
+        Set<Post> posts = postService.getAllPosts();
         assertEquals(2, posts.size());
     }
 
@@ -81,10 +82,9 @@ class TestPostService {
 
     @Test
     void testGetPinnedPostsFromCoP() {
-        CoPPost copPost = new CoPPost("Pinned CoP Post", "This is a pinned CoP post", adminUser, cop, "", "", "");
-        copPost.setPinned(true);
-        postService.createPost(adminUser, "CoP Post", "This is a CoP post", cop);
-        postService.getAllPosts().add(copPost);
+        Post post = postService.createPost(adminUser, "CoP Post", "This is a CoP post", cop);
+        post.setPinned(true);
+
         List<Post> posts = postService.getPinnedPostsFromCoP(cop);
         assertEquals(1, posts.size());
         assertTrue(posts.get(0).isPinned());

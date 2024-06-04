@@ -3,7 +3,6 @@ package org.example.tests;
 import org.example.domain.CommunityOfPractice;
 import org.example.exceptions.UnityvilleException;
 import org.example.factory.UserFactory;
-import org.example.post.CoPPost;
 import org.example.post.Post;
 import org.example.service.CoPService;
 import org.example.service.PostService;
@@ -39,9 +38,9 @@ class TestCoPService {
     @Test
     void testGetPinnedPostsFromCoP() throws UnityvilleException {
         CommunityOfPractice cop = copService.createCoP("CoP1", adminUser);
-        CoPPost pinnedPost = new CoPPost("Pinned Post", "This is a pinned post", adminUser, cop, "", "", "");
-        pinnedPost.setPinned(true);
-        postService.getAllPosts().add(pinnedPost);
+
+        Post post = postService.createPost(adminUser, "Pinned Post", "This is a pinned post", cop);
+        post.setPinned(true);
 
         List<Post> pinnedPosts = copService.getPinnedPostsFromCoP("CoP1", postService);
         assertEquals(1, pinnedPosts.size());
@@ -51,8 +50,7 @@ class TestCoPService {
     @Test
     void testGetPinnedPostsFromCoPNoPinnedPosts() throws UnityvilleException {
         CommunityOfPractice cop = copService.createCoP("CoP1", adminUser);
-        CoPPost post = new CoPPost("Post", "This is a post", adminUser, cop, "", "", "");
-        postService.getAllPosts().add(post);
+        postService.createPost(adminUser, "Post", "This is a post", cop);
 
         List<Post> pinnedPosts = copService.getPinnedPostsFromCoP("CoP1", postService);
         assertTrue(pinnedPosts.isEmpty());

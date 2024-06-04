@@ -46,7 +46,7 @@ public class AdminUser extends AbstractUser {
     public CoPPost deleteCoPPost(PostService postService, String title) {
         for (Post post : postService.getAllPosts()) {
             if (post instanceof CoPPost coPPost && coPPost.getTitle().equals(title)) {
-                postService.getAllPosts().remove(coPPost);
+                postService.removePost(coPPost);
                 return coPPost;
             }
         }
@@ -56,7 +56,7 @@ public class AdminUser extends AbstractUser {
     public GroupPost deleteGroupPost(PostService postService, String title) {
         for (Post post : postService.getAllPosts()) {
             if (post instanceof GroupPost groupPost && groupPost.getTitle().equals(title)) {
-                postService.getAllPosts().remove(groupPost);
+                postService.removePost(groupPost);
                 return groupPost;
             }
         }

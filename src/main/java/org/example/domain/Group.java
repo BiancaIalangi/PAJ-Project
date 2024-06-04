@@ -1,27 +1,24 @@
 package org.example.domain;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.example.post.GroupPost;
 import org.example.user.AdminUser;
 import org.example.user.User;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
-@Getter
-@Setter
 public class Group {
     private String name;
-    private AdminUser admin;
-    private List<User> members;
-    private List<GroupPost> posts;
+    private final AdminUser admin;
+    private final Set<User> members;
+    private final Set<GroupPost> posts;
 
     public Group(String name, AdminUser admin) {
         this.name = name;
         this.admin = admin;
-        this.members = new ArrayList<>();
-        this.members = new ArrayList<>();
+        this.members = new HashSet<>();
+        this.posts = new HashSet<>();
     }
 
     @Override
@@ -44,4 +41,27 @@ public class Group {
     public boolean exitUser(User user) {
         return members.remove(user);
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public AdminUser getAdmin() {
+        return admin;
+    }
+
+
+    public Set<User> getMembers() {
+        return Collections.unmodifiableSet(members);
+    }
+
+
+    public Set<GroupPost> getPosts() {
+        return Collections.unmodifiableSet(posts);
+    }
+
 }

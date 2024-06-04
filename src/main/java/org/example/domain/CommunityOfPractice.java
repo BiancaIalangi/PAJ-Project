@@ -1,28 +1,25 @@
 package org.example.domain;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.example.post.CoPPost;
 import org.example.user.AdminUser;
 import org.example.user.User;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
-@Getter
-@Setter
 public class CommunityOfPractice {
     private String name;
-    private AdminUser creator;
-    private List<User> followers;
-    private List<CoPPost> posts;
+    private final AdminUser creator;
+    private final Set<User> followers;
+    private final Set<CoPPost> posts;
 
     public CommunityOfPractice(String name, AdminUser creator) {
         this.name = name;
         this.creator = creator;
-        this.followers = new ArrayList<>();
-        this.posts = new ArrayList<>();
+        this.followers = new HashSet<>();
+        this.posts = new HashSet<>();
     }
 
     public boolean isUserInCoP(User member) {
@@ -64,5 +61,25 @@ public class CommunityOfPractice {
             return false;
         CommunityOfPractice other = (CommunityOfPractice) obj;
         return Objects.equals(name, other.name);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public AdminUser getCreator() {
+        return creator;
+    }
+
+    public Set<User> getFollowers() {
+        return Collections.unmodifiableSet(followers);
+    }
+
+    public Set<CoPPost> getPosts() {
+        return Collections.unmodifiableSet(posts);
     }
 }

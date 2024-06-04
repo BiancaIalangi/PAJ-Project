@@ -1,7 +1,5 @@
 package org.example.user;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.example.domain.CommunityOfPractice;
 import org.example.domain.Employee;
 import org.example.domain.Group;
@@ -13,21 +11,19 @@ import org.example.service.PostService;
 
 import java.util.*;
 
-@Getter
-@Setter
 public abstract class AbstractUser extends Employee implements User {
     private String username;
     private String password;
     private String email;
-    private List<Post> likes;
-    private Map<Post, List<String>> comments;
+    private Set<Post> likes;
+    private Map<Post, Set<String>> comments;
 
     protected AbstractUser(String name, String title, String username, String password, String email) {
         super(name, title);
         this.username = username;
         this.password = password;
         this.email = email;
-        this.likes = new ArrayList<>();
+        this.likes = new HashSet<>();
         this.comments = new HashMap<>();
     }
 
@@ -108,6 +104,46 @@ public abstract class AbstractUser extends Employee implements User {
 
         post.addComment(comment);
 
-        comments.computeIfAbsent(post, k -> new ArrayList<>()).add(comment);
+        comments.computeIfAbsent(post, k -> new HashSet<>()).add(comment);
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Set<Post> getLikes() {
+        return Collections.unmodifiableSet(likes);
+    }
+
+    public void setLikes(Set<Post> likes) {
+        this.likes = likes;
+    }
+
+    public Map<Post, Set<String>> getComments() {
+        return comments;
+    }
+
+    public void setComments(Map<Post, Set<String>> comments) {
+        this.comments = comments;
     }
 }

@@ -30,8 +30,8 @@ class TestBasicUser {
         user2.enrollGroup(groupService, GROUP_NAME);
 
         assertEquals(2, group.getMembers().size());
-        assertEquals(user1, group.getMembers().get(0));
-        assertEquals(user2, group.getMembers().get(1));
+        assertTrue(group.getMembers().contains(user1));
+        assertTrue(group.getMembers().contains(user2));
     }
 
     @Test
@@ -68,9 +68,9 @@ class TestBasicUser {
         assertEquals(3, cop1.getFollowers().size());
         assertTrue(cop2.getFollowers().isEmpty());
 
-        assertEquals(user1, cop1.getFollowers().get(0));
-        assertEquals(user2, cop1.getFollowers().get(1));
-        assertEquals(adminUser1, cop1.getFollowers().get(2));
+        assertTrue(cop1.getFollowers().contains(user1));
+        assertTrue(cop1.getFollowers().contains(user2));
+        assertTrue(cop1.getFollowers().contains(adminUser1));
     }
 
     @Test
@@ -145,7 +145,7 @@ class TestBasicUser {
 
         user1.likePost(postService, "title");
         assertEquals(1, post.getLikes());
-        assertEquals(post, user1.getLikes().get(0));
+        assertTrue(user1.getLikes().contains(post));
     }
 
     @Test
@@ -173,7 +173,7 @@ class TestBasicUser {
 
         user1.likePost(postService, "title");
         assertEquals(1, post.getLikes());
-        assertEquals(post, user1.getLikes().get(0));
+        assertTrue(user1.getLikes().contains(post));
         user1.unlikePost(postService, "title");
         assertEquals(0, post.getLikes());
         assertTrue(user1.getLikes().isEmpty());
@@ -204,8 +204,8 @@ class TestBasicUser {
         user1.commentPost(postService, "title", "this is a comment");
 
         assertEquals(1, post.getComments().size());
-        assertEquals("this is a comment", post.getComments().get(0));
-        assertEquals("this is a comment", user1.getComments().get(post).get(0));
+        assertEquals("this is a comment", post.getComments().toArray()[0]);
+        assertEquals("this is a comment", user1.getComments().get(post).toArray()[0]);
     }
 
     @Test

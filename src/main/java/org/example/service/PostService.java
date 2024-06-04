@@ -7,12 +7,14 @@ import org.example.post.GroupPost;
 import org.example.post.Post;
 import org.example.user.AdminUser;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PostService {
-    private final List<Post> posts = new ArrayList<>();
+    private final Set<Post> posts = new HashSet<>();
 
     public Post createPost(AdminUser user, String title, String content, Object groupOrCoP) {
         if (groupOrCoP instanceof Group group) {
@@ -37,8 +39,12 @@ public class PostService {
         return post;
     }
 
-    public List<Post> getAllPosts() {
-        return posts;
+    public Set<Post> getAllPosts() {
+        return Collections.unmodifiableSet(posts);
+    }
+
+    public boolean removePost(Post post) {
+        return posts.remove(post);
     }
 
     public List<Post> getPostsByGroup(Group group) {
