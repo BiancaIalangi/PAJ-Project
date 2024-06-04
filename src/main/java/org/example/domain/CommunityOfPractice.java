@@ -33,6 +33,10 @@ public class CommunityOfPractice {
         followers.add(user);
     }
 
+    public boolean removeUser(User user) {
+        return followers.remove(user);
+    }
+
     @Override
     public String toString() {
         return "CommunityOfPractice{" +

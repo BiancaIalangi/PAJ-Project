@@ -1,26 +1,30 @@
 package org.example;
 
-import org.example.domain.*;
-import org.example.post.CoPPost;
-import org.example.post.GroupPost;
-import org.example.post.Post;
+import org.example.domain.CommunityOfPractice;
+import org.example.exceptions.UnityvilleException;
+import org.example.factory.UserFactory;
+import org.example.service.CoPService;
 import org.example.user.AdminUser;
 import org.example.user.BasicUser;
-import org.example.user.User;
-import org.example.service.CoPService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Application {
 
-    public static void main(String[] args) {
-//        CoPService copService = new CoPService();
+    public static void main(String[] args) throws UnityvilleException {
+        CoPService copService = new CoPService();
 //
-//        // Create some users
-//        AdminUser admin = new AdminUser("admin1", "password", "admin1@example.com");
-//        BasicUser user1 = new BasicUser("user1", "password", "user1@example.com");
-//        BasicUser user2 = new BasicUser("user2", "password", "user2@example.com");
+        // Create some users
+        AdminUser adminUser = (AdminUser) UserFactory.createNewUser("manager", "First User");
+        BasicUser user1 = (BasicUser) UserFactory.createNewUser("account", "Second User");
+        BasicUser user2 = (BasicUser) UserFactory.createNewUser("programmer", "Third User");
+
+        CommunityOfPractice cop1 = adminUser.createCoP(copService, "CoPOne");
+        user1.followCoP(copService, "CoPOne");
+        user2.followCoP(copService, "CoPOne");
+        System.out.println(cop1);
+
+
+//        user1.unfollowCoP(copService, "CoPOne");
+//        System.out.println(cop1);
 //
 //        // Create a CoP
 //        List<User> users = new ArrayList<>();

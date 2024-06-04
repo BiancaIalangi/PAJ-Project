@@ -1,23 +1,21 @@
 package org.example.service;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.example.domain.CommunityOfPractice;
 import org.example.exceptions.UnityvilleException;
 import org.example.post.CoPPost;
 import org.example.post.Post;
 import org.example.user.AdminUser;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-@Getter
-@Setter
 public class CoPService {
-    private List<CommunityOfPractice> communityOfPractices = new ArrayList<>();
+    private Set<CommunityOfPractice> communityOfPractices = new HashSet<>();
 
-    public List<CommunityOfPractice> getAllCoPs() {
-        return communityOfPractices;
+    public Set<CommunityOfPractice> getCommunityOfPractices() {
+        return Collections.unmodifiableSet(communityOfPractices);
     }
 
     private CommunityOfPractice findCoPByName(String coPName) throws UnityvilleException {
@@ -27,10 +25,10 @@ public class CoPService {
                 .orElseThrow(() -> new UnityvilleException("Community of practice with name " + coPName + " does not exists."));
     }
 
-    public List<Post> getPinnedPostsFromCoP(String coPName, List<Post> posts) throws UnityvilleException {
+    public List<Post> getPinnedPostsFromCoP(String coPName, PostService postService) throws UnityvilleException {
         CommunityOfPractice cop = findCoPByName(coPName);
 
-        List<CoPPost> groupPosts = posts.stream()
+        List<CoPPost> groupPosts = postService.getAllPosts().stream()
                 .filter(CoPPost.class::isInstance)
                 .map(CoPPost.class::cast)
                 .toList();
@@ -55,8 +53,7 @@ public class CoPService {
             }
         }
 
-        throw new UnityvilleException("Community of Practice with name + " + name + "does not exists");
+        throw new UnityvilleException("Community of Practice with name " + name + " does not exists");
     }
 
-//    public void createCoP()
 }

@@ -5,6 +5,9 @@ import lombok.Setter;
 import org.example.domain.CommunityOfPractice;
 import org.example.domain.Group;
 import org.example.exceptions.UnityvilleException;
+import org.example.post.CoPPost;
+import org.example.post.GroupPost;
+import org.example.post.Post;
 import org.example.service.CoPService;
 import org.example.service.GroupService;
 import org.example.service.PostService;
@@ -12,52 +15,102 @@ import org.example.service.PostService;
 @Getter
 @Setter
 public class AdminUser extends AbstractUser {
-
     public AdminUser(String name, String title, String username, String password, String email) {
         super(name, title, username, password, email);
     }
 
     @Override
-    public void createPost(String topic, String content) {
+    public boolean exitGroup(GroupService groupService, String groupName) throws UnityvilleException {
+        Group group = groupService.findByName(groupName);
 
-        System.out.println(getUsername() + " created a post in topic: " + topic + " with content: " + content);
+        if (group.getAdmin().equals(this)) {
+            System.out.println("Admin can't exit this group");
+            return false;
+        }
+
+        return group.exitUser(this);
     }
 
-    public void publishNews(String newsContent) {
-        System.out.println(getUsername() + " published news: " + newsContent);
+    @Override
+    public boolean unfollowCoP(CoPService coPService, String copName) throws UnityvilleException {
+        CommunityOfPractice cop = coPService.findByName(copName);
+
+        if (cop.getCreator().equals(this)) {
+            System.out.println("Admin can't exit this CoP");
+            return false;
+        }
+
+        return cop.removeUser(this);
     }
 
-    public void deleteNews(int newsId) {
-        System.out.println(getUsername() + " deleted news with ID: " + newsId);
+    public CoPPost deleteCoPPost(PostService postService, String title) {
+        for (Post post : postService.getAllPosts()) {
+            if (post instanceof CoPPost coPPost && coPPost.getTitle().equals(title)) {
+                postService.getAllPosts().remove(coPPost);
+                return coPPost;
+            }
+        }
+        return null;
     }
 
-    public void editNews(int newsId, String newContent) {
-        System.out.println(getUsername() + " edited news with ID: " + newsId + " new content: " + newContent);
+    public GroupPost deleteGroupPost(PostService postService, String title) {
+        for (Post post : postService.getAllPosts()) {
+            if (post instanceof GroupPost groupPost && groupPost.getTitle().equals(title)) {
+                postService.getAllPosts().remove(groupPost);
+                return groupPost;
+            }
+        }
+        return null;
     }
 
-    public void pinNews(int newsId) {
-        System.out.println(getUsername() + " pinned news with ID: " + newsId);
+    public void editCoPPost(PostService postService, String title, String newContent, String bestPractices) {
+        for (Post post : postService.getAllPosts()) {
+            if (post instanceof CoPPost coPPost && coPPost.getTitle().equals(title)) {
+                if (newContent != null) {
+                    coPPost.setContent(newContent);
+                }
+                if (bestPractices != null) {
+                    coPPost.setBestPractices(bestPractices);
+                }
+            }
+        }
+    }
+
+    public void editGroupPost(PostService postService, String title, String newContent) {
+        for (Post post : postService.getAllPosts()) {
+            if (post instanceof GroupPost groupPost && groupPost.getTitle().equals(title)) {
+                if (newContent != null) {
+                    groupPost.setContent(newContent);
+                }
+            }
+        }
+    }
+
+    public void pinPost(PostService postService, String title) {
+        postService.getAllPosts().stream()
+                .filter(post -> post.getTitle().equals(title))
+                .forEach(post -> post.setPinned(true));
     }
 
 
-    public void createGroup(GroupService groupService, String groupName) throws UnityvilleException {
-        groupService.createGroup(groupName, this);
+    public Group createGroup(GroupService groupService, String groupName) throws UnityvilleException {
+        return groupService.createGroup(groupName, this);
     }
 
-    public void createGroupPost(PostService postService, String title, String content,
+    public Post createGroupPost(PostService postService, String title, String content,
                                 GroupService groupService, String groupName) throws UnityvilleException {
         Group group = groupService.findByName(groupName);
 
-        postService.createPost(this, title, content, group);
+        return postService.createPost(this, title, content, group);
     }
 
-    public void createCoP(CoPService coPService, String nameCoP) {
-        coPService.createCoP(nameCoP, this);
+    public CommunityOfPractice createCoP(CoPService coPService, String nameCoP) {
+        return coPService.createCoP(nameCoP, this);
     }
 
-    public void createCoPPost(PostService postService, String title, String content, CoPService coPService, String coPName) throws UnityvilleException {
+    public Post createCoPPost(PostService postService, String title, String content, CoPService coPService, String coPName) throws UnityvilleException {
         CommunityOfPractice cop = coPService.findByName(coPName);
 
-        postService.createPost(this, title, content, cop);
+        return postService.createPost(this, title, content, cop);
     }
 }

@@ -6,10 +6,12 @@ import org.example.domain.CommunityOfPractice;
 import org.example.domain.Employee;
 import org.example.domain.Group;
 import org.example.exceptions.UnityvilleException;
+import org.example.post.Post;
 import org.example.service.CoPService;
 import org.example.service.GroupService;
+import org.example.service.PostService;
 
-import java.util.Objects;
+import java.util.*;
 
 @Getter
 @Setter
@@ -17,29 +19,16 @@ public abstract class AbstractUser extends Employee implements User {
     private String username;
     private String password;
     private String email;
+    private List<Post> likes;
+    private Map<Post, List<String>> comments;
 
     protected AbstractUser(String name, String title, String username, String password, String email) {
         super(name, title);
         this.username = username;
         this.password = password;
         this.email = email;
-    }
-
-    public abstract void createPost(String topic, String content);
-
-    @Override
-    public void viewNews() {
-        System.out.println(username + " is viewing news.");
-    }
-
-    @Override
-    public void likeNews(int newsId) {
-        System.out.println(username + " liked news with ID: " + newsId);
-    }
-
-    @Override
-    public void commentOnNews(int newsId, String comment) {
-        System.out.println(username + " commented on news with ID: " + newsId + " Comment: " + comment);
+        this.likes = new ArrayList<>();
+        this.comments = new HashMap<>();
     }
 
     @Override
@@ -62,6 +51,7 @@ public abstract class AbstractUser extends Employee implements User {
         return Objects.equals(email, other.email);
     }
 
+    @Override
     public void enrollGroup(GroupService groupService, String groupName) throws UnityvilleException {
         Group group = groupService.findByName(groupName);
 
@@ -72,6 +62,9 @@ public abstract class AbstractUser extends Employee implements User {
         group.enrollUser(this);
     }
 
+    public abstract boolean exitGroup(GroupService groupService, String groupName) throws UnityvilleException;
+
+    @Override
     public void followCoP(CoPService coPService, String copName) throws UnityvilleException {
         CommunityOfPractice cop = coPService.findByName(copName);
 
@@ -80,5 +73,41 @@ public abstract class AbstractUser extends Employee implements User {
         }
 
         cop.enrollUser(this);
+    }
+
+    public abstract boolean unfollowCoP(CoPService coPService, String copName) throws UnityvilleException;
+
+    @Override
+    public void likePost(PostService postService, String title) throws UnityvilleException {
+        Post post = postService.findPostByTitle(title);
+        if (post == null) {
+            throw new UnityvilleException("Post with title " + title + " does not exists");
+        }
+        post.receiveLike();
+
+        likes.add(post);
+    }
+
+    @Override
+    public void unlikePost(PostService postService, String title) throws UnityvilleException {
+        Post post = postService.findPostByTitle(title);
+        if (post == null) {
+            throw new UnityvilleException("Post with title " + title + " does not exists");
+        }
+
+        post.receiveUnlike();
+        likes.remove(post);
+    }
+
+    @Override
+    public void commentPost(PostService postService, String title, String comment) throws UnityvilleException {
+        Post post = postService.findPostByTitle(title);
+        if (post == null) {
+            throw new UnityvilleException("Post with title " + title + " does not exists");
+        }
+
+        post.addComment(comment);
+
+        comments.computeIfAbsent(post, k -> new ArrayList<>()).add(comment);
     }
 }

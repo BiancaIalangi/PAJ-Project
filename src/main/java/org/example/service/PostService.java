@@ -5,7 +5,7 @@ import org.example.domain.Group;
 import org.example.post.CoPPost;
 import org.example.post.GroupPost;
 import org.example.post.Post;
-import org.example.user.AbstractUser;
+import org.example.user.AdminUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,24 +14,23 @@ import java.util.stream.Collectors;
 public class PostService {
     private final List<Post> posts = new ArrayList<>();
 
-    public void createPost(AbstractUser user, String title, String content, Object groupOrCoP) {
+    public Post createPost(AdminUser user, String title, String content, Object groupOrCoP) {
         if (groupOrCoP instanceof Group group) {
-            createGroupPost(user, title, content, group);
+            return createGroupPost(user, title, content, group);
         } else if (groupOrCoP instanceof CommunityOfPractice cop) {
-            createCoPPost(user, title, content, cop);
-        } else {
-            throw new IllegalArgumentException("Invalid group or CoP");
+            return createCoPPost(user, title, content, cop);
         }
+        throw new IllegalArgumentException("Invalid group or CoP");
     }
 
-    private GroupPost createGroupPost(AbstractUser user, String title, String content, Group group) {
+    private GroupPost createGroupPost(AdminUser user, String title, String content, Group group) {
         GroupPost post = new GroupPost(title, content, user, group);
         posts.add(post);
         System.out.println(user.getUsername() + " created a post in group: " + group.getName());
         return post;
     }
 
-    private CoPPost createCoPPost(AbstractUser user, String title, String content, CommunityOfPractice cop) {
+    private CoPPost createCoPPost(AdminUser user, String title, String content, CommunityOfPractice cop) {
         CoPPost post = new CoPPost(title, content, user, cop, "", "", "");
         posts.add(post);
         System.out.println(user.getUsername() + " created a post in CoP: " + cop.getName());
@@ -62,5 +61,12 @@ public class PostService {
                         && ((CoPPost) post).getCommunityOfPractice().equals(cop)
                         && post.isPinned())
                 .collect(Collectors.toList());
+    }
+
+    public Post findPostByTitle(String title) {
+        return getAllPosts()
+                .stream()
+                .filter(post -> post.getTitle().equals(title))
+                .findFirst().orElse(null);
     }
 }
