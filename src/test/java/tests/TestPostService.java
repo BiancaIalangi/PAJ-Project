@@ -1,4 +1,4 @@
-package org.example.tests;
+package tests;
 
 import org.example.domain.CommunityOfPractice;
 import org.example.domain.Group;
@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -91,10 +94,36 @@ class TestPostService {
     }
 
     @Test
-    void testFindPostByTitle() {
-        postService.createPost(adminUser, "Unique Title", "This post has a unique title", group);
-        Post post = postService.findPostByTitle("Unique Title");
-        assertNotNull(post);
-        assertEquals("Unique Title", post.getTitle());
+    void testFindPostByTitle() throws InterruptedException {
+        final Object lock = new Object();
+        Post post = postService.createPost(adminUser, "Unique Title", "This post has a unique title", group);
+        synchronized (lock) {
+            while (post == null) {
+                lock.wait();
+            }
+        }
+        Post postByTitle = postService.findPostByTitle("Unique Title");
+        assertNotNull(postByTitle);
+        assertEquals("Unique Title", postByTitle.getTitle());
+    }
+
+    @Test
+    void testConcurrentPostCreation() throws InterruptedException {
+        int numberOfThreads = 7;
+        ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+        CountDownLatch latch = new CountDownLatch(numberOfThreads);
+
+        for (int i = 0; i < numberOfThreads; i++) {
+            int index = i;
+            executorService.submit(() -> {
+                postService.createPost(adminUser, "Post " + index, "Content " + index, cop);
+                latch.countDown();
+            });
+        }
+
+        latch.await();
+        executorService.shutdown();
+
+        assertEquals(numberOfThreads, postService.getAllPosts().size());
     }
 }

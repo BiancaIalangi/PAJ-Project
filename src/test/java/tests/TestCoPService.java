@@ -1,4 +1,4 @@
-package org.example.tests;
+package tests;
 
 import org.example.domain.CommunityOfPractice;
 import org.example.exceptions.UnityvilleException;

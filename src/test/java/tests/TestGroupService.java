@@ -1,4 +1,4 @@
-package org.example.tests;
+package tests;
 
 import org.example.domain.Group;
 import org.example.exceptions.UnityvilleException;

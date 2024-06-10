@@ -1,4 +1,4 @@
-package org.example.tests;
+package tests;
 
 import org.example.factory.UserFactory;
 import org.example.user.AdminUser;

@@ -78,10 +78,9 @@ public class AdminUser extends AbstractUser {
 
     public void editGroupPost(PostService postService, String title, String newContent) {
         for (Post post : postService.getAllPosts()) {
-            if (post instanceof GroupPost groupPost && groupPost.getTitle().equals(title)) {
-                if (newContent != null) {
-                    groupPost.setContent(newContent);
-                }
+            if (post instanceof GroupPost groupPost && groupPost.getTitle().equals(title) && (newContent != null)) {
+                groupPost.setContent(newContent);
+
             }
         }
     }
